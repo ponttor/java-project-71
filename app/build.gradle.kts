@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation("tools.jackson.core:jackson-databind:3.0.0")
     implementation("info.picocli:picocli:4.7.6")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
