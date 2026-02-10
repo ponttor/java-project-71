@@ -51,4 +51,14 @@ class DifferTest {
 
         assertEquals(expected, Differ.generate(file1.toString(), file2.toString(), "plain"));
     }
+
+    @Test
+    void testJsonFormat() throws Exception {
+        Path file1 = getFixturePath("nested1.json");
+        Path file2 = getFixturePath("nested2.json");
+
+        String expected = getFixtureContent("expected_json.txt");
+
+        assertEquals(expected, Differ.generate(file1.toString(), file2.toString(), "json"));
+    }
 }
