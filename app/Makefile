@@ -1,5 +1,7 @@
 build:
 	./gradlew build
+test:
+	./gradlew test
 run-dist:
 	./gradlew installDist
 	./build/install/app/bin/app
@@ -8,4 +10,4 @@ report:
 checkstyle:
 	./gradlew checkstyleMain checkstyleTest
 
-.PHONY: build run-dist report checkstyle
+.PHONY: build test run-dist report checkstyle
