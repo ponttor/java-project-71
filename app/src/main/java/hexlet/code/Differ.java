@@ -1,10 +1,6 @@
 package hexlet.code;
 
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,13 +12,11 @@ import java.util.TreeSet;
 
 public class Differ {
     public static String generate(String filePath1, String filePath2) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        Path path1 = resolvePath(filePath1);
+        Path path2 = resolvePath(filePath2);
 
-        String content1 = Files.readString(resolvePath(filePath1));
-        String content2 = Files.readString(resolvePath(filePath2));
-
-        Map<String, Object> data1 = mapper.readValue(content1, new TypeReference<>() { });
-        Map<String, Object> data2 = mapper.readValue(content2, new TypeReference<>() { });
+        Map<String, Object> data1 = Parser.parse(path1);
+        Map<String, Object> data2 = Parser.parse(path2);
 
         return buildDiff(data1, data2);
     }

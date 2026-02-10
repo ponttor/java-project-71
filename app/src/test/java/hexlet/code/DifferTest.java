@@ -87,4 +87,23 @@ class DifferTest {
 
         assertThrows(Exception.class, () -> Differ.generate(file1.toString(), file2.toString()));
     }
+
+    @Test
+    void testYamlDiff() throws Exception {
+        Path file1 = getFixturePath("file1.yml");
+        Path file2 = getFixturePath("file2.yml");
+
+        String expected = String.join("\n",
+            "{",
+            "  - follow: false",
+            "    host: hexlet.io",
+            "  - proxy: 123.234.53.22",
+            "  - timeout: 50",
+            "  + timeout: 20",
+            "  + verbose: true",
+            "}"
+        );
+
+        assertEquals(expected, Differ.generate(file1.toString(), file2.toString()));
+    }
 }
