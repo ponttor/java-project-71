@@ -12,13 +12,18 @@ import java.util.TreeSet;
 
 public class Differ {
     public static String generate(String filePath1, String filePath2) throws IOException {
+        return generate(filePath1, filePath2, "stylish");
+    }
+
+    public static String generate(String filePath1, String filePath2, String format) throws IOException {
         Path path1 = resolvePath(filePath1);
         Path path2 = resolvePath(filePath2);
 
         Map<String, Object> data1 = Parser.parse(path1);
         Map<String, Object> data2 = Parser.parse(path2);
 
-        return buildDiff(data1, data2);
+        List<DiffNode> diff = buildDiff(data1, data2);
+        return Formatter.format(diff, format);
     }
 
     private static Path resolvePath(String filePath) {
@@ -26,12 +31,12 @@ public class Differ {
         return path.isAbsolute() ? path : path.toAbsolutePath().normalize();
     }
 
-    private static String buildDiff(Map<String, Object> data1, Map<String, Object> data2) {
+    private static List<DiffNode> buildDiff(Map<String, Object> data1, Map<String, Object> data2) {
         Set<String> keys = new TreeSet<>();
         keys.addAll(data1.keySet());
         keys.addAll(data2.keySet());
 
-        List<String> lines = new ArrayList<>();
+        List<DiffNode> nodes = new ArrayList<>();
         for (String key : keys) {
             boolean inFirst = data1.containsKey(key);
             boolean inSecond = data2.containsKey(key);
@@ -40,22 +45,17 @@ public class Differ {
                 Object value1 = data1.get(key);
                 Object value2 = data2.get(key);
                 if (Objects.equals(value1, value2)) {
-                    lines.add(formatLine("    ", key, value1));
+                    nodes.add(DiffNode.unchanged(key, value1));
                 } else {
-                    lines.add(formatLine("  - ", key, value1));
-                    lines.add(formatLine("  + ", key, value2));
+                    nodes.add(DiffNode.changed(key, value1, value2));
                 }
             } else if (inFirst) {
-                lines.add(formatLine("  - ", key, data1.get(key)));
+                nodes.add(DiffNode.removed(key, data1.get(key)));
             } else {
-                lines.add(formatLine("  + ", key, data2.get(key)));
+                nodes.add(DiffNode.added(key, data2.get(key)));
             }
         }
 
-        return "{\n" + String.join("\n", lines) + "\n}";
-    }
-
-    private static String formatLine(String prefix, String key, Object value) {
-        return prefix + key + ": " + value;
+        return nodes;
     }
 }
