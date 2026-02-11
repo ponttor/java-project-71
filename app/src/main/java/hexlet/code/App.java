@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true,
         version = "gendiff 1.0"
 )
-public class App implements Callable<Integer> {
+public final class App implements Callable<Integer> {
     @Parameters(index = "0", description = "path to first file", paramLabel = "filepath1")
     private String filePath1;
 
