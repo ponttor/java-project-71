@@ -1,29 +1,29 @@
 package hexlet.code;
 
-import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class Differ {
-    public static String generate(String filePath1, String filePath2) throws IOException {
+    public static String generate(String filePath1, String filePath2) throws Exception {
         return generate(filePath1, filePath2, "stylish");
     }
 
-    public static String generate(String filePath1, String filePath2, String format) throws IOException {
-        Path path1 = resolvePath(filePath1);
-        Path path2 = resolvePath(filePath2);
+    public static String generate(String filePath1, String filePath2, String format) throws Exception {
+        Map<String, Object> data1 = loadData(filePath1);
+        Map<String, Object> data2 = loadData(filePath2);
 
-        Map<String, Object> data1 = Parser.parse(path1);
-        Map<String, Object> data2 = Parser.parse(path2);
-
-        List<DiffNode> diff = buildDiff(data1, data2);
+        List<DiffNode> diff = DiffBuilder.build(data1, data2);
         return Formatter.format(diff, format);
+    }
+
+    private static Map<String, Object> loadData(String filePath) throws Exception {
+        Path path = resolvePath(filePath);
+        String content = Files.readString(path);
+        String inputFormat = getInputFormat(path);
+        return Parser.parse(content, inputFormat);
     }
 
     private static Path resolvePath(String filePath) {
@@ -31,31 +31,13 @@ public class Differ {
         return path.isAbsolute() ? path : path.toAbsolutePath().normalize();
     }
 
-    private static List<DiffNode> buildDiff(Map<String, Object> data1, Map<String, Object> data2) {
-        Set<String> keys = new TreeSet<>();
-        keys.addAll(data1.keySet());
-        keys.addAll(data2.keySet());
-
-        List<DiffNode> nodes = new ArrayList<>();
-        for (String key : keys) {
-            boolean inFirst = data1.containsKey(key);
-            boolean inSecond = data2.containsKey(key);
-
-            if (inFirst && inSecond) {
-                Object value1 = data1.get(key);
-                Object value2 = data2.get(key);
-                if (Objects.equals(value1, value2)) {
-                    nodes.add(DiffNode.unchanged(key, value1));
-                } else {
-                    nodes.add(DiffNode.changed(key, value1, value2));
-                }
-            } else if (inFirst) {
-                nodes.add(DiffNode.removed(key, data1.get(key)));
-            } else {
-                nodes.add(DiffNode.added(key, data2.get(key)));
-            }
+    private static String getInputFormat(Path path) {
+        String name = path.getFileName().toString();
+        int lastDot = name.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == name.length() - 1) {
+            return "";
         }
-
-        return nodes;
+        return name.substring(lastDot + 1).toLowerCase();
     }
+
 }

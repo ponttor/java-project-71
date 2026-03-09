@@ -23,42 +23,67 @@ class DifferTest {
     }
 
     @Test
-    void testJsonNestedDiff() throws Exception {
-        Path file1 = getFixturePath("nested1.json");
-        Path file2 = getFixturePath("nested2.json");
+    void testJsonDefaultFormat() throws Exception {
+        assertDefaultMatchesStylish("nested1.json", "nested2.json");
+    }
+
+    @Test
+    void testJsonStylishFormat() throws Exception {
+        assertFormat("nested1.json", "nested2.json", "stylish", "expected_stylish.txt");
+    }
+
+    @Test
+    void testJsonPlainFormat() throws Exception {
+        assertFormat("nested1.json", "nested2.json", "plain", "expected_plain.txt");
+    }
+
+    @Test
+    void testJsonJsonFormat() throws Exception {
+        assertFormat("nested1.json", "nested2.json", "json", "expected_json.txt");
+    }
+
+    @Test
+    void testYamlDefaultFormat() throws Exception {
+        assertDefaultMatchesStylish("file1.yml", "file2.yml");
+    }
+
+    @Test
+    void testYamlStylishFormat() throws Exception {
+        assertFormat("file1.yml", "file2.yml", "stylish", "expected_stylish.txt");
+    }
+
+    @Test
+    void testYamlPlainFormat() throws Exception {
+        assertFormat("file1.yml", "file2.yml", "plain", "expected_plain.txt");
+    }
+
+    @Test
+    void testYamlJsonFormat() throws Exception {
+        assertFormat("file1.yml", "file2.yml", "json", "expected_json.txt");
+    }
+
+    private void assertDefaultMatchesStylish(String firstInput, String secondInput) throws Exception {
+        Path first = getFixturePath(firstInput);
+        Path second = getFixturePath(secondInput);
 
         String expected = getFixtureContent("expected_stylish.txt");
+        String defaultOutput = Differ.generate(first.toString(), second.toString());
+        String stylishOutput = Differ.generate(first.toString(), second.toString(), "stylish");
 
-        assertEquals(expected, Differ.generate(file1.toString(), file2.toString()));
+        assertEquals(expected, defaultOutput);
+        assertEquals(stylishOutput, defaultOutput);
     }
 
-    @Test
-    void testYamlNestedDiff() throws Exception {
-        Path file1 = getFixturePath("file1.yml");
-        Path file2 = getFixturePath("file2.yml");
+    private void assertFormat(
+        String firstInput,
+        String secondInput,
+        String format,
+        String expectedFixture
+    ) throws Exception {
+        Path first = getFixturePath(firstInput);
+        Path second = getFixturePath(secondInput);
+        String expected = getFixtureContent(expectedFixture);
 
-        String expected = getFixtureContent("expected_stylish.txt");
-
-        assertEquals(expected, Differ.generate(file1.toString(), file2.toString()));
-    }
-
-    @Test
-    void testPlainFormat() throws Exception {
-        Path file1 = getFixturePath("nested1.json");
-        Path file2 = getFixturePath("nested2.json");
-
-        String expected = getFixtureContent("expected_plain.txt");
-
-        assertEquals(expected, Differ.generate(file1.toString(), file2.toString(), "plain"));
-    }
-
-    @Test
-    void testJsonFormat() throws Exception {
-        Path file1 = getFixturePath("nested1.json");
-        Path file2 = getFixturePath("nested2.json");
-
-        String expected = getFixtureContent("expected_json.txt");
-
-        assertEquals(expected, Differ.generate(file1.toString(), file2.toString(), "json"));
+        assertEquals(expected, Differ.generate(first.toString(), second.toString(), format));
     }
 }

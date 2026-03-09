@@ -7,7 +7,7 @@ import hexlet.code.formatters.StylishFormatter;
 import java.util.List;
 
 public class Formatter {
-    public static String format(List<DiffNode> diff, String format) {
+    public static String format(List<DiffNode> diff, String format) throws Exception {
         if ("json".equals(format)) {
             return JsonFormatter.format(diff);
         }

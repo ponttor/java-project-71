@@ -22,7 +22,10 @@ public class PlainFormatter {
                 case UNCHANGED -> {
                     // skip
                 }
-                default -> throw new IllegalStateException("Unknown node status");
+                default -> throw new IllegalStateException(
+                    "Plain formatter received unsupported node status: "
+                        + node.getStatus() + ", key: '" + node.getKey() + "'"
+                );
             }
         }
 

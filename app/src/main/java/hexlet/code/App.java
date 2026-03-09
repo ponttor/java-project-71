@@ -24,10 +24,15 @@ public final class App implements Callable<Integer> {
     private String format;
 
     @Override
-    public Integer call() throws Exception {
-        String diff = Differ.generate(filePath1, filePath2, format);
-        System.out.println(diff);
-        return 0;
+    public Integer call() {
+        try {
+            String diff = Differ.generate(filePath1, filePath2, format);
+            System.out.println(diff);
+            return 0;
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return 1;
+        }
     }
 
     public static void main(String[] args) {

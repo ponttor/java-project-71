@@ -17,7 +17,10 @@ public class StylishFormatter {
                     lines.add(formatLine("  - ", node.getKey(), node.getValue1()));
                     lines.add(formatLine("  + ", node.getKey(), node.getValue2()));
                 }
-                default -> throw new IllegalStateException("Unknown node status");
+                default -> throw new IllegalStateException(
+                    "Stylish formatter received unsupported node status: "
+                        + node.getStatus() + ", key: '" + node.getKey() + "'"
+                );
             }
         }
 
